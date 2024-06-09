@@ -1,7 +1,11 @@
+import 'package:flutter_demo1/model/response.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_demo1/utils/loading_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_demo1/apis/app.dart';
+import 'package:flutter_demo1/utils/loading_util.dart';
+import 'package:flutter_demo1/utils/store_util.dart';
+import 'package:flutter_demo1/utils/json_util.dart';
+import 'package:flutter_demo1/utils/snackbar_util.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -55,7 +59,6 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -197,19 +200,28 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   onPressed: () {
                     if (email.isEmpty) {
-                      Get.snackbar('提示', '请输入邮箱');
+                      SnackbarUtil.show('提示', '请输入邮箱');
+                      return;
+                    }
+                    if (!GetUtils.isEmail(email)) {
+                      SnackbarUtil.show('提示', '请输入正确的邮箱');
                       return;
                     }
                     if (password.isEmpty) {
-                      Get.snackbar('提示', '请输入密码');
+                      SnackbarUtil.show('提示', '请输入密码');
                       return;
                     }
-                    LoadingUtil.show();
-                    Future.delayed(const Duration(seconds: 2), () {
-                      LoadingUtil.hide();
-                      Get.offAllNamed('/home');
+                    UserApi.login(email, password).then((value) {
+                      var response = HttpResponse.fromJson(value);
+                      if (response.code == 200) {
+                        saveData('user', JsonUtil.encode(response.data));
+                        saveData('token', response.data['token']);
+                        SnackbarUtil.show('提示', '登录成功');
+                        Get.offAllNamed('/home');
+                      } else {
+                        SnackbarUtil.show('提示', response.message);
+                      }
                     });
-                    // UserApi.login(email, password).then((value) {});
                   },
                   child: const Text('登录',
                       style: TextStyle(

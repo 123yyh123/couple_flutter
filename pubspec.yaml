@@ -38,9 +38,9 @@ dependencies:
   get: ^4.6.6
   animated_text_kit: ^4.2.2
   dio: ^5.4.3+1
-  shared_preferences: ^2.2.3
+  shared_preferences: ^2.2.0
   loading_animation_widget:
-
+  flutter_easyloading: ^3.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

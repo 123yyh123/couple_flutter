@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:get/get.dart';
+import 'package:flutter_demo1/utils/store_util.dart';
 
 class StartView extends StatefulWidget {
   const StartView({super.key});
@@ -33,7 +34,14 @@ class _StartViewState extends State<StartView> {
             ],
             totalRepeatCount: 2,
             onFinished: () {
-              Get.offAllNamed("/login");
+              readData('token').then((value) {
+                print(value);
+                if (value != null) {
+                  Get.offNamed('/home');
+                } else {
+                  Get.offNamed('/login');
+                }
+              });
             },
             isRepeatingAnimation: true,
           ),

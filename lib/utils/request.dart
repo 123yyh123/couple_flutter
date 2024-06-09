@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_demo1/utils/store_util.dart';
 import 'package:flutter_demo1/config/base_request.dart';
+import 'loading_util.dart';
 
 /// 请求方法:枚举类型
 enum DioMethod {
@@ -42,9 +43,13 @@ class Request {
   }
 
   /// 请求拦截器
-  void _onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  void _onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    // 请求开始时，显示loading
+    LoadingUtil.show();
     // 头部添加token
-    options.headers["token"] = readData("token") ?? "";
+    String? token = await readData('token');
+    options.headers["token"] = token;
     // 更多业务需求
     handler.next(options);
     // super.onRequest(options, handler);
@@ -56,7 +61,7 @@ class Request {
     // 请求成功是对数据做基本处理
     if (response.statusCode == 200) {
       // 处理成功的响应
-      // print("响应结果: $response");
+      print("响应结果: $response");
     } else {
       // 处理异常结果
       print("响应异常: $response");
