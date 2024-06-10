@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo1/bindings/controller_binding.dart';
 import 'package:get/get.dart';
 import 'config/routes.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       home: const StartView(),
       defaultTransition: Transition.rightToLeft,
       builder: EasyLoading.init(),
+      initialBinding: ControllerBinding(),
     );
   }
 }
