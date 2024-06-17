@@ -1,5 +1,6 @@
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
 import 'package:flutter_demo1/controller/location_controller.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
@@ -47,7 +48,7 @@ class _HomeViewState extends State<HomeView> {
             child: ElevatedButton(
               onPressed: () async {
                 Get.log('点击定位到当前位置');
-                locationController.mapController.moveCamera(
+                locationController.mapController?.moveCamera(
                   CameraUpdate.newLatLng(LatLng(
                     double.parse(locationController.latitude.value),
                     double.parse(locationController.longitude.value),

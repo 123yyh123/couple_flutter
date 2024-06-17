@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_demo1/config/amap_config.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ class LocationController extends GetxController {
   //实例化插件
   final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
 
-  late AMapController mapController;
+  AMapController? mapController;
 
   var isFirst = true;
 
@@ -33,32 +34,37 @@ class LocationController extends GetxController {
     AMapFlutterLocation.updatePrivacyShow(true, true);
     AMapFlutterLocation.setApiKey(AMapConfig.androidKey, AMapConfig.iosKey);
     Get.log('开始监听定位信息');
-    _locationListener = _locationPlugin.onLocationChanged().listen((event) {
+    _locationListener =
+        _locationPlugin.onLocationChanged().listen((event) async {
       Get.log('定位信息：$event');
       latitude.value = event['latitude'].toString();
       longitude.value = event['longitude'].toString();
       // 移动地图到当前位置，只执行一次
       if (isFirst && mapController != null) {
-        mapController.moveCamera(
+        mapController?.moveCamera(
           CameraUpdate.newLatLng(LatLng(
             double.parse(latitude.value),
             double.parse(longitude.value),
           )),
         );
-        BitmapDescriptor.fromAssetImage(
-                ImageConfiguration(devicePixelRatio: 1200),
-                "images/IMG_202406102819_94x94.png")
-            .then((value) => {
-                  markerMap.add(Marker(
-                    position: LatLng(double.parse(latitude.value),
-                        double.parse(longitude.value)),
-                    infoWindow: InfoWindow(
-                      title: '当前位置',
-                      snippet: '纬度：${latitude.value}，经度：${longitude.value}',
-                    ),
-                    icon: value,
-                  ))
-                });
+        Widget widget =
+            await MapImageUtil.imageFromByteData('images/touxiang.png');
+        ByteData byteData = await MapImageUtil.widgetToImage(
+          widget,
+          devicePixelRatio: AMapUtil.devicePixelRatio,
+          pixelRatio: AMapUtil.devicePixelRatio,
+          size: const Size(200, 200),
+        );
+        var a = byteData.buffer.asUint8List();
+        markerMap.add(Marker(
+          position: LatLng(
+              double.parse(latitude.value), double.parse(longitude.value)),
+          infoWindow: InfoWindow(
+            title: '当前位置',
+            snippet: '纬度：${latitude.value}，经度：${longitude.value}',
+          ),
+          icon: BitmapDescriptor.fromBytes(a),
+        ));
         isFirst = false;
       }
     });
